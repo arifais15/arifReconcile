@@ -1,6 +1,3 @@
-
-"use client";
-
 import { History, Printer, Trash2, Download, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
@@ -115,8 +112,13 @@ export default function Home() {
             isSpinning={isSpinning}
             setIsSpinning={setIsSpinning}
         />
-        <div className="absolute bottom-4 left-4 text-sm text-muted-foreground z-10 no-print">
+        <div className={cn(
+          "absolute bottom-4 left-4 text-sm z-10 no-print font-semibold",
+          isSpinning && "live-pulse-animation"
+        )}>
+          <span className="multicolor-text">
             Developer: Ariful Islam, AGM (Finance)
+          </span>
         </div>
       </main>
 
