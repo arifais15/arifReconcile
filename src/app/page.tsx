@@ -1,3 +1,4 @@
+'use client';
 import { History, Printer, Trash2, Download, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
