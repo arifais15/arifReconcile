@@ -108,7 +108,6 @@ export default function Home() {
         <h1 className="text-4xl md:text-5xl font-headline font-bold text-primary">
             Digital Lottery System 
         </h1>
-        {/* <h5 className="text-2xl md:text-3xl font-headline font-bold tracking-tight text-accent">Raffle Draw -2025</h5> */}
         <div className="grid w-48 items-center gap-1.5 mt-2">
             <Label htmlFor="max-results" className="text-foreground">Maximum Prize</Label>
             <Input
@@ -168,7 +167,7 @@ export default function Home() {
                       Drawing Results
                   </h3>
                   <Button variant="ghost" size="icon" onClick={handlePrint} className="h-8 w-8 no-print">
-                      {/* <Printer className="size-5" /> */}
+                   
                   </Button>
                   <Button variant="ghost" size="icon" onClick={handleDownload} className="h-8 w-8 no-print">
                     <Download className="size-5" />
