@@ -3,7 +3,7 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
-  title: 'Numberverse',
+  title: 'Digital Raffle Draw',
   description: 'A universe of numbers, from random digits to dice rolls.',
 };
 
