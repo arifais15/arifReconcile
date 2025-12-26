@@ -106,11 +106,11 @@ export default function Home() {
     <div className="h-screen flex flex-col bg-background text-foreground overflow-hidden">
       <header className="absolute top-4 left-4 z-10 no-print">
         <h1 className="text-4xl md:text-5xl font-headline font-bold text-primary">
-            Gazipur PBS-2
+            Digital Lottery System 
         </h1>
-        <h5 className="text-2xl md:text-3xl font-headline font-bold tracking-tight text-accent">Raffle Draw -2025</h5>
+        {/* <h5 className="text-2xl md:text-3xl font-headline font-bold tracking-tight text-accent">Raffle Draw -2025</h5> */}
         <div className="grid w-48 items-center gap-1.5 mt-2">
-            <Label htmlFor="max-results" className="text-foreground">Max Results in History</Label>
+            <Label htmlFor="max-results" className="text-foreground">Maximum Prize</Label>
             <Input
               type="number"
               id="max-results"
@@ -122,7 +122,7 @@ export default function Home() {
         </div>
       </header>
       
-      <div className="flex-1 grid grid-cols-1 md:grid-cols-[1fr_350px] overflow-hidden">
+      <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
         <main className="flex-1 flex items-center justify-center bg-grid-pattern overflow-hidden">
           <WheelSpinner 
             onNewResult={handleNewResult}
@@ -133,7 +133,7 @@ export default function Home() {
           />
         </main>
 
-        <aside className="w-full md:w-[350px] flex flex-col p-4 border-l bg-background">
+        <aside className="w-full md:w-[350px] h-[45vh] md:h-full flex flex-col p-4 border-l bg-background">
           <div className="flex items-center justify-center gap-4 no-print">
               <div className="grid w-full items-center gap-1.5">
                 <Label htmlFor="min-range">Min</Label>
@@ -165,10 +165,10 @@ export default function Home() {
               <div className="flex items-center justify-center gap-2 mb-4">
                   <h3 className="text-2xl font-medium flex items-center gap-2">
                       <History className="size-7" />
-                      History
+                      Drawing Results
                   </h3>
                   <Button variant="ghost" size="icon" onClick={handlePrint} className="h-8 w-8 no-print">
-                      <Printer className="size-5" />
+                      {/* <Printer className="size-5" /> */}
                   </Button>
                   <Button variant="ghost" size="icon" onClick={handleDownload} className="h-8 w-8 no-print">
                     <Download className="size-5" />

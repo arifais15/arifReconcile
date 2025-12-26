@@ -1,5 +1,7 @@
 {
   "projects": {
-    "default": "studio-9791798922-6420b"
-  }
+    "staging": "arif380-71530114-9c484"
+  },
+  "targets": {},
+  "etags": {}
 }
