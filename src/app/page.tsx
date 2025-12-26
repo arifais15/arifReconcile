@@ -95,6 +95,7 @@ export default function Home() {
   }
   
   const displayedHistory = spinHistory.slice(0, maxResults);
+  const latestResultSerial = spinHistory.length > 0 ? spinHistory[0].serial : -1;
 
   return (
     <div className="h-screen flex flex-col lg:flex-row bg-background text-foreground overflow-hidden">
@@ -114,7 +115,7 @@ export default function Home() {
             setIsSpinning={setIsSpinning}
         />
         <div className={cn(
-          "absolute bottom-4 left-4 text-sm z-10 no-print font-semibold",
+          "absolute bottom-4 left-4 text-lg z-10 no-print font-bold",
           isSpinning && "live-pulse-animation"
         )}>
           <span className="multicolor-text">
@@ -185,7 +186,10 @@ export default function Home() {
                 <div className="flex flex-col gap-2 text-xl text-muted-foreground">
                   {displayedHistory.length > 0 ? (
                     displayedHistory.map((pastResult) => (
-                        <div key={pastResult.serial} className="relative w-full flex items-center justify-between p-3 bg-muted rounded-md group">
+                        <div key={pastResult.serial} className={cn(
+                            "relative w-full flex items-center justify-between p-3 bg-muted rounded-md group",
+                            pastResult.serial === latestResultSerial && "bg-primary/20 border border-primary/80"
+                        )}>
                           <span className={cn("text-lg font-medium text-muted-foreground/70 w-8 text-center", pastResult.status === 'discarded' && "line-through text-muted-foreground/50")}>{pastResult.serial}.</span>
                           <span className={cn(
                             "font-mono tracking-widest text-2xl flex-1 text-center",
