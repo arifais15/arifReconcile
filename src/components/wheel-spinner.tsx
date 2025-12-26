@@ -32,9 +32,9 @@ export function WheelSpinner({
   const winnerSoundRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
-    spinSoundRef.current = new Audio("https://actions.google.com/sounds/v1/alarms/digital_watch_alarm_long.ogg");
+    spinSoundRef.current = new Audio('/sounds/tick.mp3');
     spinSoundRef.current.loop = true;
-    winnerSoundRef.current = new Audio("https://actions.google.com/sounds/v1/cartoon/magic_chime.ogg");
+    winnerSoundRef.current = new Audio('/sounds/win.mp3');
     
     const handleRecallSpin = (event: Event) => {
       const recallEvent = event as RecallSpinEvent;

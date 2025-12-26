@@ -16,6 +16,3 @@
 - Use simple, geometric icons for the dice roller and spin functionalities.
 - Smooth, physics-based animation for the spinning wheel and dice rolls.
 - Clean, spacious layout to focus attention on the numbers and results.
-/* <h5 className="text-2xl md:text-3xl font-headline font-bold tracking-tight text-accent">Raffle Draw -2025</h5> */
-
-   {/* <Printer className="size-5" /> */}
