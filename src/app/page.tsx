@@ -122,6 +122,11 @@ export default function Home() {
             Developer: Ariful Islam, AGM (Finance)
           </span>
         </div>
+        {!isSpinning && (
+          <div className="border-scroll-text multicolor-text">
+            Developer: Ariful Islam, AGM (Finance)
+          </div>
+        )}
       </main>
 
       {/* Sidebar: Controls and History */}
@@ -188,7 +193,7 @@ export default function Home() {
                     displayedHistory.map((pastResult) => (
                         <div key={pastResult.serial} className={cn(
                             "relative w-full flex items-center justify-between p-3 bg-muted rounded-md group",
-                            pastResult.serial === latestResultSerial && "bg-primary/20 border border-primary/80"
+                            pastResult.serial === latestResultSerial && "bg-yellow-400/30 border border-yellow-500"
                         )}>
                           <span className={cn("text-lg font-medium text-muted-foreground/70 w-8 text-center", pastResult.status === 'discarded' && "line-through text-muted-foreground/50")}>{pastResult.serial}.</span>
                           <span className={cn(
