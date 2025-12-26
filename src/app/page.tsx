@@ -122,11 +122,6 @@ export default function Home() {
             Developer: Ariful Islam, AGM (Finance)
           </span>
         </div>
-        {!isSpinning && (
-          <div className="border-scroll-text multicolor-text">
-            Developer: Ariful Islam, AGM (Finance)
-          </div>
-        )}
       </main>
 
       {/* Sidebar: Controls and History */}
