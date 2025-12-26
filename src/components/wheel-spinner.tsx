@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
@@ -28,14 +27,8 @@ export function WheelSpinner({
 
   const wheelRef = useRef<HTMLDivElement>(null);
   const spinTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const spinSoundRef = useRef<HTMLAudioElement | null>(null);
-  const winnerSoundRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
-    spinSoundRef.current = new Audio('/sounds/tick.mp3');
-    spinSoundRef.current.loop = true;
-    winnerSoundRef.current = new Audio('/sounds/win.mp3');
-    
     const handleRecallSpin = (event: Event) => {
       const recallEvent = event as RecallSpinEvent;
       const onSpinComplete = recallEvent.detail.onSpinComplete;
@@ -45,16 +38,7 @@ export function WheelSpinner({
     document.addEventListener('recallSpin', handleRecallSpin);
     
     return () => {
-      // Cleanup audio objects and event listener on unmount
       document.removeEventListener('recallSpin', handleRecallSpin);
-      if (spinSoundRef.current) {
-        spinSoundRef.current.pause();
-        spinSoundRef.current = null;
-      }
-      if (winnerSoundRef.current) {
-        winnerSoundRef.current.pause();
-        winnerSoundRef.current = null;
-      }
     }
   }, []);
 
@@ -65,9 +49,12 @@ export function WheelSpinner({
     setResult(null);
     setShowConfetti(false);
     
-    if (spinSoundRef.current) {
-      spinSoundRef.current.volume = 1.0;
-      spinSoundRef.current.play().catch(e => console.error("Error playing spin sound:", e));
+    const spinSound = document.getElementById('spin-sound') as HTMLAudioElement;
+    const winnerSound = document.getElementById('winner-sound') as HTMLAudioElement;
+
+    if (spinSound) {
+      spinSound.currentTime = 0;
+      spinSound.play().catch(e => console.error("Error playing spin sound:", e));
     }
 
     const spin_duration = Math.random() * 5000 + 10000;
@@ -87,14 +74,14 @@ export function WheelSpinner({
     }
 
     spinTimeoutRef.current = setTimeout(() => {
-      spinSoundRef.current?.pause();
-      if(spinSoundRef.current) {
-        spinSoundRef.current.currentTime = 0;
+      if (spinSound) {
+        spinSound.pause();
+        spinSound.currentTime = 0;
       }
       
-      if (winnerSoundRef.current) {
-        winnerSoundRef.current.volume = 1.0;
-        winnerSoundRef.current.play().catch(e => console.error("Error playing winner sound:", e));
+      if (winnerSound) {
+        winnerSound.currentTime = 0;
+        winnerSound.play().catch(e => console.error("Error playing winner sound:", e));
       }
 
       setIsSpinning(false);
@@ -124,6 +111,8 @@ export function WheelSpinner({
 
   return (
     <>
+      <audio id="spin-sound" src="/sounds/tick.mp3" loop />
+      <audio id="winner-sound" src="/sounds/win.mp3" />
       {showConfetti && <Confetti />}
       <Card className="w-full max-w-none shadow-none border-0 bg-transparent no-print">
         <CardContent className="flex flex-col items-center gap-8 p-6">
