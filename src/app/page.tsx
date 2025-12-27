@@ -98,13 +98,13 @@ export default function Home() {
   const latestResultSerial = spinHistory.length > 0 ? spinHistory[0].serial : -1;
 
   return (
-    <div className="h-screen flex flex-col lg:flex-row bg-background text-foreground overflow-hidden">
+    <div className="h-screen flex flex-col lg:flex-row bg-background text-foreground overflow-auto lg:overflow-hidden">
       
       {/* Main Content: Wheel Spinner */}
-      <main className="flex-1 flex flex-col items-center justify-center bg-grid-pattern overflow-hidden p-4 relative">
+      <main className="flex-1 flex flex-col items-center justify-center bg-grid-pattern overflow-hidden p-2 sm:p-4 relative">
         <header className="absolute top-4 left-4 z-10 no-print">
-            <h1 className="text-3xl md:text-4xl font-headline font-bold text-primary">
-            Raffle Draw
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-headline font-bold text-primary">
+                Digital Raffle Draw
             </h1>
         </header>
         <WheelSpinner 
@@ -115,7 +115,7 @@ export default function Home() {
             setIsSpinning={setIsSpinning}
         />
         <div className={cn(
-          "absolute bottom-4 left-4 text-lg z-10 no-print font-bold",
+          "absolute bottom-4 left-4 text-sm sm:text-base z-10 no-print font-bold",
           isSpinning && "live-pulse-animation"
         )}>
           <span className="multicolor-text">
@@ -125,7 +125,7 @@ export default function Home() {
       </main>
 
       {/* Sidebar: Controls and History */}
-      <aside className="w-full lg:w-[380px] h-auto lg:h-full flex flex-col p-4 border-l bg-background">
+      <aside className="w-full lg:w-96 h-auto lg:h-full flex flex-col p-2 sm:p-4 border-l bg-background">
           <div className="flex flex-col gap-4 no-print">
               <div className="grid w-full items-center gap-1.5">
                   <Label htmlFor="max-results" className="text-foreground">Maximum Prize</Label>
@@ -169,8 +169,8 @@ export default function Home() {
           {/* History Section */}
           <div className="w-full flex-1 flex flex-col min-h-0 printable-section">
               <div className="flex items-center justify-between gap-2 mb-4">
-                  <h3 className="text-2xl font-medium flex items-center gap-2">
-                      <History className="size-7" />
+                  <h3 className="text-xl md:text-2xl font-medium flex items-center gap-2">
+                      <History className="size-6 md:size-7" />
                       Drawing Results
                   </h3>
                   <div className="flex items-center gap-1">
@@ -182,17 +182,17 @@ export default function Home() {
                     </Button>
                   </div>
               </div>
-              <ScrollArea className="flex-1 rounded-md border p-4 bg-background/70">
-                <div className="flex flex-col gap-2 text-xl text-muted-foreground">
+              <ScrollArea className="flex-1 rounded-md border p-2 sm:p-4 bg-background/70">
+                <div className="flex flex-col gap-2 text-lg md:text-xl text-muted-foreground">
                   {displayedHistory.length > 0 ? (
                     displayedHistory.map((pastResult) => (
                         <div key={pastResult.serial} className={cn(
-                            "relative w-full flex items-center justify-between p-3 bg-muted rounded-md group",
+                            "relative w-full flex items-center justify-between p-2 sm:p-3 bg-muted rounded-md group",
                             pastResult.serial === latestResultSerial && "bg-yellow-400/30 border border-yellow-500"
                         )}>
-                          <span className={cn("text-lg font-medium text-muted-foreground/70 w-8 text-center", pastResult.status === 'discarded' && "line-through text-muted-foreground/50")}>{pastResult.serial}.</span>
+                          <span className={cn("text-base md:text-lg font-medium text-muted-foreground/70 w-8 text-center", pastResult.status === 'discarded' && "line-through text-muted-foreground/50")}>{pastResult.serial}.</span>
                           <span className={cn(
-                            "font-mono tracking-widest text-2xl flex-1 text-center",
+                            "font-mono tracking-widest text-xl md:text-2xl flex-1 text-center",
                             pastResult.status === 'discarded' && "line-through text-muted-foreground/50"
                           )}>
                             {pastResult.number.toString().padStart(4, '0')}

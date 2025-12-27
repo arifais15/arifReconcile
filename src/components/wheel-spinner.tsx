@@ -1,10 +1,114 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Disc } from 'lucide-react';
 import { Confetti } from './confetti';
+
+// Custom hook for audio playback to ensure it's browser-safe
+const useAudio = (isSpinning: boolean) => {
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const spinningMelodyNoteIndexRef = useRef(0);
+
+  const noteFrequencies: { [key: string]: number } = {
+    'C4': 261.63,
+    'D4': 293.66,
+    'E4': 329.63,
+    'F4': 349.23,
+    'G4': 392.00,
+    'A4': 440.00,
+  };
+
+  // Melody for "O amar bondhu go chirodin pothchola"
+  const spinningMelody = [
+    'G4', 'A4', 'G4', 'F4', 'E4', 'D4', 'C4',
+    'C4', 'D4', 'E4', 'F4', 'G4', 'A4', 'G4',
+  ];
+
+  const playSpinningMelodyNote = useCallback(() => {
+    if (!audioContextRef.current) return;
+    const context = audioContextRef.current;
+
+    const noteName = spinningMelody[spinningMelodyNoteIndexRef.current];
+    const freq = noteFrequencies[noteName];
+
+    const oscillator = context.createOscillator();
+    const gain = context.createGain();
+
+    oscillator.type = 'sine';
+    oscillator.frequency.setValueAtTime(freq, context.currentTime);
+
+    // Gentle pluck sound
+    gain.gain.setValueAtTime(0.001, context.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.2, context.currentTime + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.01, context.currentTime + 0.25);
+
+    oscillator.connect(gain);
+    gain.connect(context.destination);
+
+    oscillator.start(context.currentTime);
+    oscillator.stop(context.currentTime + 0.3);
+
+    spinningMelodyNoteIndexRef.current = (spinningMelodyNoteIndexRef.current + 1) % spinningMelody.length;
+  }, [noteFrequencies, spinningMelody]);
+
+  const playWinnerSound = useCallback(() => {
+    if (!audioContextRef.current) return;
+    const context = audioContextRef.current;
+
+    const baseFrequencies = [261.63, 329.63, 392.00]; // C, E, G for a C-Major chord
+    const detuneAmount = 5; // Detune in cents
+
+    baseFrequencies.forEach(baseFreq => {
+      // Create a chorus effect with multiple oscillators
+      [-detuneAmount, 0, detuneAmount].forEach(detune => {
+        const oscillator = context.createOscillator();
+        const gain = context.createGain();
+
+        oscillator.type = 'sawtooth';
+        oscillator.frequency.setValueAtTime(baseFreq, context.currentTime);
+        oscillator.detune.setValueAtTime(detune, context.currentTime); // Detune for chorus effect
+
+        // Swelling and fading effect
+        gain.gain.setValueAtTime(0, context.currentTime);
+        gain.gain.linearRampToValueAtTime(0.15, context.currentTime + 0.2); // Swell in
+        gain.gain.linearRampToValueAtTime(0, context.currentTime + 1.5); // Fade out
+
+        oscillator.connect(gain);
+        gain.connect(context.destination);
+
+        oscillator.start(context.currentTime);
+        oscillator.stop(context.currentTime + 1.5);
+      });
+    });
+  }, []);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && !audioContextRef.current) {
+      audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+    }
+
+    let melodyInterval: NodeJS.Timeout | null = null;
+
+    if (isSpinning) {
+      // melodyInterval = setInterval(playSpinningMelodyNote, 300);
+    } else {
+      if (melodyInterval) {
+        clearInterval(melodyInterval);
+      }
+      spinningMelodyNoteIndexRef.current = 0;
+    }
+
+    return () => {
+      if (melodyInterval) {
+        clearInterval(melodyInterval);
+      }
+    };
+  }, [isSpinning, playSpinningMelodyNote]);
+  
+  return { playWinnerSound };
+};
 
 type RecallSpinEvent = CustomEvent<{ onSpinComplete: (newNumber: number) => void }>;
 
@@ -28,6 +132,8 @@ export function WheelSpinner({
   const wheelRef = useRef<HTMLDivElement>(null);
   const spinTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  const { playWinnerSound } = useAudio(isSpinning);
+
   useEffect(() => {
     const handleRecallSpin = (event: Event) => {
       const recallEvent = event as RecallSpinEvent;
@@ -49,15 +155,7 @@ export function WheelSpinner({
     setResult(null);
     setShowConfetti(false);
     
-    const spinSound = document.getElementById('spin-sound') as HTMLAudioElement;
-    const winnerSound = document.getElementById('winner-sound') as HTMLAudioElement;
-
-    if (spinSound) {
-      spinSound.currentTime = 0;
-      spinSound.play().catch(e => console.error("Error playing spin sound:", e));
-    }
-
-    const spin_duration = Math.random() * 5000 + 10000;
+    const spin_duration = Math.random() * 4000 + 8000;
     const randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
     
     const baseRotation = 30 * 360; 
@@ -74,15 +172,7 @@ export function WheelSpinner({
     }
 
     spinTimeoutRef.current = setTimeout(() => {
-      if (spinSound) {
-        spinSound.pause();
-        spinSound.currentTime = 0;
-      }
-      
-      if (winnerSound) {
-        winnerSound.currentTime = 0;
-        winnerSound.play().catch(e => console.error("Error playing winner sound:", e));
-      }
+      playWinnerSound();
 
       setIsSpinning(false);
       setResult(randomNumber);
@@ -96,12 +186,11 @@ export function WheelSpinner({
       setShowConfetti(true);
       setTimeout(() => {
         setShowConfetti(false);
-      }, 15000); // Confetti stops after 15 seconds
+      }, 15000);
     }, spin_duration);
   };
 
   useEffect(() => {
-    // Cleanup timeout on unmount
     return () => {
       if (spinTimeoutRef.current) {
         clearTimeout(spinTimeoutRef.current);
@@ -111,8 +200,6 @@ export function WheelSpinner({
 
   return (
     <>
-      <audio id="spin-sound" src="/sounds/tick.mp3" loop />
-      <audio id="winner-sound" src="/sounds/win.mp3" />
       {showConfetti && <Confetti />}
       <Card className="w-full max-w-none shadow-none border-0 bg-transparent no-print">
         <CardContent className="flex flex-col items-center gap-8 p-6">
@@ -143,7 +230,7 @@ export function WheelSpinner({
             </div>
 
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <div className="text-8xl md:text-9xl lg:text-[10rem] font-bold tracking-widest font-mono h-[10rem] lg:h-[12rem] flex items-center justify-center p-4 rounded-lg bg-background/80 backdrop-blur-sm min-w-[20rem] lg:min-w-[28rem] mx-auto">
+                <div className="text-6xl md:text-8xl lg:text-9xl font-bold tracking-widest font-mono h-[10rem] lg:h-[12rem] flex items-center justify-center p-4 rounded-lg bg-background/80 backdrop-blur-sm min-w-[20rem] lg:min-w-[28rem] mx-auto">
                     {result !== null ? result.toString().padStart(4, '0') : (isSpinning ? '?' : '----')}
                 </div>
             </div>
