@@ -143,7 +143,7 @@ export default function Home() {
       <aside className="w-full lg:w-96 h-auto lg:h-full flex flex-col p-2 sm:p-4 border-l bg-background">
           <div className="flex flex-col gap-4 no-print">
                <div className="flex items-center justify-between gap-2">
-                  <Label className="text-foreground">Title Settings</Label>
+                  <Label className="text-foreground">Title Settings & User Manual </Label>
                   <Button variant="outline" size="icon" onClick={() => setIsSettingsOpen(true)}>
                     <Settings className="h-4 w-4" />
                   </Button>
