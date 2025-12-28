@@ -113,13 +113,14 @@ export default function Home() {
             max={max}
             isSpinning={isSpinning}
             setIsSpinning={setIsSpinning}
+            spinHistory={spinHistory}
         />
         <div className={cn(
           "absolute bottom-4 left-4 text-sm sm:text-base z-10 no-print font-bold",
           isSpinning && "live-pulse-animation"
         )}>
           <span className="multicolor-text">
-            Developer: Ariful Islam, AGM (Finance)
+            Developer: Ariful Islam, AGM (Finance),Gazipur PBS-2
           </span>
         </div>
       </main>

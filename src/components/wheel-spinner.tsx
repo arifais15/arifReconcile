@@ -110,7 +110,36 @@ const useAudio = (isSpinning: boolean) => {
   return { playWinnerSound };
 };
 
+const generateSecureRandomNumber = (min: number, max: number, excludedNumbers: number[] = []) => {
+  const range = max - min + 1;
+  const availableNumbers = range - excludedNumbers.length;
+  if (availableNumbers <= 0) {
+    throw new Error("No available numbers in the specified range.");
+  }
+
+  const bytesNeeded = Math.ceil(Math.log2(range) / 8);
+  const randomBytes = new Uint8Array(bytesNeeded);
+  
+  let randomValue;
+  let randomNumber;
+  do {
+    do {
+      window.crypto.getRandomValues(randomBytes);
+      randomValue = randomBytes.reduce((acc, byte) => (acc << 8) | byte, 0);
+    } while (randomValue >= Math.pow(2, bytesNeeded * 8) - (Math.pow(2, bytesNeeded * 8) % range));
+    randomNumber = min + (randomValue % range);
+  } while (excludedNumbers.includes(randomNumber));
+  
+  return randomNumber;
+};
+
 type RecallSpinEvent = CustomEvent<{ onSpinComplete: (newNumber: number) => void }>;
+
+type SpinResult = {
+  number: number;
+  status: "active" | "discarded";
+  serial: number;
+};
 
 export function WheelSpinner({ 
   onNewResult,
@@ -118,12 +147,14 @@ export function WheelSpinner({
   max,
   isSpinning,
   setIsSpinning,
+  spinHistory,
 }: { 
   onNewResult: (result: number) => void,
   min: number,
   max: number,
   isSpinning: boolean,
   setIsSpinning: (isSpinning: boolean) => void,
+  spinHistory: SpinResult[];
 }) {
   const [result, setResult] = useState<number | null>(null);
   const [showConfetti, setShowConfetti] = useState(false);
@@ -146,7 +177,7 @@ export function WheelSpinner({
     return () => {
       document.removeEventListener('recallSpin', handleRecallSpin);
     }
-  }, []);
+  }, [spinHistory]);
 
   const handleSpin = (recallCallback?: (newNumber: number) => void) => {
     if (isSpinning || min >= max) return;
@@ -155,11 +186,12 @@ export function WheelSpinner({
     setResult(null);
     setShowConfetti(false);
     
-    const spin_duration = Math.random() * 4000 + 8000;
-    const randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
+    const spin_duration = generateSecureRandomNumber(8000, 12000);
+    const excludedNumbers = spinHistory.map(r => r.number);
+    const randomNumber = generateSecureRandomNumber(min, max, excludedNumbers);
     
     const baseRotation = 30 * 360; 
-    const newRotation = rotation + baseRotation + (Math.random() * 360);
+    const newRotation = rotation + baseRotation + generateSecureRandomNumber(0, 359);
 
     setRotation(newRotation);
     
