@@ -186,11 +186,11 @@ export function WheelSpinner({
     setResult(null);
     setShowConfetti(false);
     
-    const spin_duration = generateSecureRandomNumber(8000, 12000);
+    const spin_duration = generateSecureRandomNumber(12000, 16000);
     const excludedNumbers = spinHistory.map(r => r.number);
     const randomNumber = generateSecureRandomNumber(min, max, excludedNumbers);
     
-    const baseRotation = 30 * 360; 
+    const baseRotation = generateSecureRandomNumber(20, 40) * 360; 
     const newRotation = rotation + baseRotation + generateSecureRandomNumber(0, 359);
 
     setRotation(newRotation);

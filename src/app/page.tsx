@@ -1,13 +1,14 @@
 'use client';
-import { History, Printer, Trash2, Download, RotateCcw } from "lucide-react";
+import { History, Printer, Trash2, Download, RotateCcw, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import dynamic from 'next/dynamic';
 import { Separator } from "@/components/ui/separator";
+import { SettingsModal } from "@/components/settings-modal";
 
 const WheelSpinner = dynamic(() => import('@/components/wheel-spinner').then(mod => mod.WheelSpinner), {
   ssr: false,
@@ -27,6 +28,16 @@ export default function Home() {
   const [isSpinning, setIsSpinning] = useState(false);
   const [maxResults, setMaxResults] = useState(25);
   const [nextSerial, setNextSerial] = useState(25);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [title, setTitle] = useState("Gazipur PBS-2");
+  const [year, setYear] = useState(new Date().getFullYear());
+
+  useEffect(() => {
+    fetch('/api/time')
+      .then(response => response.json())
+      .then(data => setYear(data.year))
+      .catch(() => setYear(new Date().getFullYear()));
+  }, []);
 
   const handleNewResult = (result: number) => {
     if (nextSerial >= 1) {
@@ -104,8 +115,11 @@ export default function Home() {
       <main className="flex-1 flex flex-col items-center justify-center bg-grid-pattern overflow-hidden p-2 sm:p-4 relative">
         <header className="absolute top-4 left-4 z-10 no-print">
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-headline font-bold text-primary">
-                Digital Raffle Draw
+                {title}
             </h1>
+            <h5 className="text-lg sm:text-xl md:text-2xl font-headline text-primary">
+                Digital Raffle Draw - {year}
+            </h5>
         </header>
         <WheelSpinner 
             onNewResult={handleNewResult}
@@ -128,6 +142,12 @@ export default function Home() {
       {/* Sidebar: Controls and History */}
       <aside className="w-full lg:w-96 h-auto lg:h-full flex flex-col p-2 sm:p-4 border-l bg-background">
           <div className="flex flex-col gap-4 no-print">
+               <div className="flex items-center justify-between gap-2">
+                  <Label className="text-foreground">Title Settings</Label>
+                  <Button variant="outline" size="icon" onClick={() => setIsSettingsOpen(true)}>
+                    <Settings className="h-4 w-4" />
+                  </Button>
+                </div>
               <div className="grid w-full items-center gap-1.5">
                   <Label htmlFor="max-results" className="text-foreground">Maximum Prize</Label>
                   <Input
@@ -228,6 +248,12 @@ export default function Home() {
               </ScrollArea>
           </div>
       </aside>
+      <SettingsModal
+        open={isSettingsOpen}
+        onOpenChange={setIsSettingsOpen}
+        title={title}
+        onTitleChange={setTitle}
+      />
     </div>
   );
 }
